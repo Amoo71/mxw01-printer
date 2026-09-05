@@ -1,32 +1,25 @@
 # MXW01 Studio
 
-Modern dark-mode Web Bluetooth app for the **MXW01** mini thermal / cat printer.
+Professional dark-mode Web Bluetooth editor for the **MXW01** mini thermal printer.
 
-**Live demo:** https://amoo71.github.io/mxw01-printer/
+**Live:** https://amoo71.github.io/mxw01-printer/
 
 ## Features
 
-- 📱 Full mobile support (touch drag, responsive)
-- 🎨 Dark glassmorphism UI
-- 🖼 Multi-image layers
-- 🔄 Rotate, scale, flip, opacity, reorder
-- ✋ Drag layers on the canvas
-- 🎛 Dither filters (Floyd-Steinberg, Atkinson, Bayer, Threshold, Pixelate)
-- 💪 Filter strength + pixelate size
-- 🌑 Print darkness / intensity control
-- ⚡ Direct Web Bluetooth print (no official app needed)
+- Full mobile support with touch drag
+- Multi-layer image editor (scale, rotate, flip, opacity, reorder)
+- Dither filters: Floyd-Steinberg, Atkinson, Bayer 4x4/8x8, Threshold, Pixelate
+- Adjustable filter strength and print darkness
+- Direct Web Bluetooth printing (no official app required)
+- Animated glassmorphism dark UI
 
 ## Usage
 
-1. Open the page in **Chrome, Edge or Opera** (desktop or Android)
-2. Turn on your MXW01 printer
-3. Tap **Verbinden** and select the device
-4. Add images, edit layers, choose a filter
-5. Adjust print darkness and hit **Drucken**
-
-## Protocol
-
-Uses the reverse-engineered MXW01 BLE protocol (service `ae30` / characteristics `ae01`–`ae03`).
+1. Open in Chrome, Edge or Opera (desktop or Android)
+2. Power on the MXW01
+3. Open the Print tab and tap Connect
+4. Add images, edit layers and filters
+5. Adjust print darkness and print
 
 ## License
 
