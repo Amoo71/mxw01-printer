@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0d12" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>MXW01 Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --bg2: #12151c;
+      --card: rgba(255,255,255,0.04);
+      --card-border: rgba(255,255,255,0.08);
+      --accent: #f59e0b;
+      --accent2: #fbbf24;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --success: #34d399;
+      --danger: #f87171;
+      --glass: rgba(18,21,28,0.75);
+      --shadow: 0 20px 40px rgba(0,0,0,0.45);
+      --radius: 16px;
+      --safe-b: env(safe-area-inset-bottom, 0px);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      height: 100%;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+    body {
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(245,158,11,0.12), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(59,130,246,0.08), transparent),
+        var(--bg);
+    }
+
+    /* Layout */
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 10px;
+      flex-shrink: 0;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--accent), #ea580c);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      box-shadow: 0 4px 14px rgba(245,158,11,0.35);
+    }
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      backdrop-filter: blur(12px);
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--danger);
+      transition: background .25s;
+    }
+    .dot.on { background: var(--success); box-shadow: 0 0 8px var(--success); }
+
+    /* Canvas Stage */
+    .stage-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 0 12px;
+      position: relative;
+    }
+    .stage {
+      flex: 1;
+      background: var(--bg2);
+      border-radius: var(--radius);
+      border: 1px solid var(--card-border);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+    }
+    .paper {
+      background: #fff;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.08),
+        0 12px 28px rgba(0,0,0,0.35),
+        0 0 40px rgba(245,158,11,0.08);
+      border-radius: 2px;
+      position: relative;
+      transform-origin: center center;
+    }
+    #preview {
+      display: block;
+      width: 100%;
+      height: auto;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    .empty-hint {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      gap: 8px;
+      pointer-events: none;
+      text-align: center;
+      padding: 20px;
+    }
+    .empty-hint svg { opacity: 0.4; }
+
+    /* Bottom Panel */
+    .panel {
+      flex-shrink: 0;
+      background: var(--glass);
+      backdrop-filter: blur(20px) saturate(1.4);
+      border-top: 1px solid var(--card-border);
+      border-radius: 20px 20px 0 0;
+      padding: 12px 14px calc(14px + var(--safe-b));
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(0,0,0,0.25);
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      border-radius: 9px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .2s;
+      border: none;
+      background: transparent;
+    }
+    .tab.active {
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    /* Tool rows */
+    .row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    .row:last-child { margin-bottom: 0; }
+
+    button.btn {
+      flex: 1;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 11px 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all .15s;
+      min-height: 42px;
+    }
+    button.btn:active { transform: scale(0.97); }
+    button.btn:disabled { opacity: 0.35; pointer-events: none; }
+    button.btn.primary {
+      background: linear-gradient(135deg, var(--accent), #ea580c);
+      border: none;
+      color: #111;
+      box-shadow: 0 4px 16px rgba(245,158,11,0.35);
+    }
+    button.btn.primary:active { box-shadow: 0 2px 8px rgba(245,158,11,0.3); }
+    button.btn.danger {
+      background: rgba(248,113,113,0.12);
+      border-color: rgba(248,113,113,0.25);
+      color: var(--danger);
+    }
+    button.btn.icon {
+      flex: 0 0 42px;
+      padding: 0;
+      font-size: 1.1rem;
+    }
+
+    /* Sliders */
+    .slider-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 2px 8px rgba(245,158,11,0.5);
+      cursor: pointer;
+      border: 2px solid #111;
+    }
+
+    select {
+      flex: 1;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      outline: none;
+    }
+
+    /* Layer list */
+    .layers {
+      max-height: 110px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .layer-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 8px 10px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .layer-item.active {
+      border-color: var(--accent);
+      background: rgba(245,158,11,0.1);
+    }
+    .layer-thumb {
+      width: 36px; height: 36px;
+      background: #fff;
+      border-radius: 6px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .layer-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .layer-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .layer-meta {
+      font-size: 0.68rem;
+      color: var(--muted);
+    }
+    .layer-actions {
+      display: flex;
+      gap: 4px;
+    }
+    .layer-actions button {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      border: none;
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    /* Hidden file input */
+    #fileInput { display: none; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: calc(180px + var(--safe-b));
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg2);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: all .3s;
+      z-index: 100;
+      box-shadow: var(--shadow);
+      max-width: 90%;
+      text-align: center;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Print progress */
+    .progress-bar {
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+      display: none;
+    }
+    .progress-bar.show { display: block; }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width .2s;
+    }
+
+    /* Responsive tweaks */
+    @media (min-width: 480px) {
+      .app { max-width: 440px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">🖨</div>
+        <span>MXW01 Studio</span>
+      </div>
+      <div class="status-pill">
+        <div class="dot" id="statusDot"></div>
+        <span id="statusText">Offline</span>
+      </div>
+    </header>
+
+    <div class="stage-wrap">
+      <div class="stage" id="stage">
+        <div class="paper" id="paper" style="width: min(92vw, 360px);">
+          <canvas id="preview" width="384" height="200"></canvas>
+        </div>
+        <div class="empty-hint" id="emptyHint">
+          <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="6" width="28" height="28" rx="4"/><path d="M14 22l4-4 4 3 6-7"/><circle cx="16" cy="15" r="2"/></svg>
+          <div>Bilder hinzufügen<br><small>Tippe auf „Bild +“</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="tabs">
+        <button class="tab active" data-tab="layers">Layers</button>
+        <button class="tab" data-tab="edit">Bearbeiten</button>
+        <button class="tab" data-tab="filter">Filter</button>
+        <button class="tab" data-tab="print">Drucken</button>
+      </div>
+
+      <!-- LAYERS TAB -->
+      <div id="tab-layers">
+        <div class="layers" id="layerList"></div>
+        <div class="row">
+          <button class="btn" id="addImageBtn">＋ Bild</button>
+          <button class="btn danger icon" id="deleteLayerBtn" title="Löschen">🗑</button>
+        </div>
+      </div>
+
+      <!-- EDIT TAB -->
+      <div id="tab-edit" style="display:none">
+        <div class="row">
+          <button class="btn icon" id="rotLeft" title="Links drehen">↺</button>
+          <button class="btn icon" id="rotRight" title="Rechts drehen">↻</button>
+          <button class="btn icon" id="flipH" title="Spiegeln H">↔</button>
+          <button class="btn icon" id="flipV" title="Spiegeln V">↕</button>
+          <button class="btn icon" id="bringFront" title="Nach vorne">⬆</button>
+          <button class="btn icon" id="sendBack" title="Nach hinten">⬇</button>
+        </div>
+        <div class="row">
+          <div class="slider-group">
+            <div class="slider-label"><span>Größe</span><span id="scaleVal">100%</span></div>
+            <input type="range" id="scaleSlider" min="10" max="300" value="100" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="slider-group">
+            <div class="slider-label"><span>Drehung</span><span id="rotVal">0°</span></div>
+            <input type="range" id="rotSlider" min="-180" max="180" value="0" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="slider-group">
+            <div class="slider-label"><span>Deckkraft</span><span id="opacityVal">100%</span></div>
+            <input type="range" id="opacitySlider" min="10" max="100" value="100" />
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTER TAB -->
+      <div id="tab-filter" style="display:none">
+        <div class="row">
+          <select id="ditherSelect">
+            <option value="floyd">Floyd-Steinberg</option>
+            <option value="atkinson">Atkinson</option>
+            <option value="bayer4">Bayer 4×4</option>
+            <option value="bayer8">Bayer 8×8</option>
+            <option value="threshold">Schwellenwert</option>
+            <option value="pixelate">Pixelate</option>
+          </select>
+        </div>
+        <div class="row">
+          <div class="slider-group">
+            <div class="slider-label"><span>Filter-Stärke</span><span id="filterStrVal">50</span></div>
+            <input type="range" id="filterStrength" min="0" max="100" value="50" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="slider-group">
+            <div class="slider-label"><span>Pixelate-Größe</span><span id="pixelVal">4</span></div>
+            <input type="range" id="pixelSize" min="2" max="24" value="4" />
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" id="invertBtn">Invertieren</button>
+          <button class="btn" id="resetFilterBtn">Reset Filter</button>
+        </div>
+      </div>
+
+      <!-- PRINT TAB -->
+      <div id="tab-print" style="display:none">
+        <div class="row">
+          <div class="slider-group">
+            <div class="slider-label"><span>Druck-Dunkelheit</span><span id="intensityVal">90</span></div>
+            <input type="range" id="intensity" min="20" max="100" value="90" />
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" id="connectBtn">Verbinden</button>
+          <button class="btn primary" id="printBtn" disabled>Drucken</button>
+        </div>
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="fileInput" accept="image/*" multiple />
+  <div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   MXW01 Studio – full client-side image editor + Web Bluetooth
+   ============================================================ */
+
+const PRINT_W = 384;
+const SERVICE = '0000ae30-0000-1000-8000-00805f9b34fb';
+const SERVICE_ALT = '0000af30-0000-1000-8000-00805f9b34fb';
+const CHAR_CTRL = '0000ae01-0000-1000-8000-00805f9b34fb';
+const CHAR_NOTIFY = '0000ae02-0000-1000-8000-00805f9b34fb';
+const CHAR_DATA = '0000ae03-0000-1000-8000-00805f9b34fb';
+
+// ---------- State ----------
+let layers = [];          // { id, img, name, x, y, scale, rotation, opacity, flipH, flipV }
+let selectedId = null;
+let nextId = 1;
+let invertGlobal = false;
+let filterMode = 'floyd';
+let filterStrength = 50;
+let pixelSize = 4;
+let canvasH = 200;        // logical height (grows with content)
+
+// Bluetooth
+let btDevice = null, btCtrl = null, btData = null, btNotify = null;
+
+// DOM
+const preview = document.getElementById('preview');
+const pctx = preview.getContext('2d', { willReadFrequently: true });
+const paper = document.getElementById('paper');
+const stage = document.getElementById('stage');
+const emptyHint = document.getElementById('emptyHint');
+const layerList = document.getElementById('layerList');
+const toastEl = document.getElementById('toast');
+
+// ---------- Helpers ----------
+function toast(msg, ms = 2200) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastEl._t);
+  toastEl._t = setTimeout(() => toastEl.classList.remove('show'), ms);
+}
+
+function uid() { return nextId++; }
+
+function getSelected() {
+  return layers.find(l => l.id === selectedId) || null;
+}
+
+function setConnected(ok) {
+  document.getElementById('statusDot').classList.toggle('on', ok);
+  document.getElementById('statusText').textContent = ok ? 'Verbunden' : 'Offline';
+  document.getElementById('printBtn').disabled = !ok || layers.length === 0;
+  document.getElementById('connectBtn').textContent = ok ? 'Trennen' : 'Verbinden';
+}
+
+// ---------- Tabs ----------
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    ['layers','edit','filter','print'].forEach(name => {
+      document.getElementById('tab-' + name).style.display =
+        t.dataset.tab === name ? 'block' : 'none';
+    });
+  });
+});
+
+// ---------- Layer management ----------
+function addImage(file) {
+  const img = new Image();
+  img.onload = () => {
+    // Fit nicely into 384 width
+    const maxW = PRINT_W * 0.92;
+    let sc = Math.min(1, maxW / img.width);
+    const layer = {
+      id: uid(),
+      img,
+      name: file.name.replace(/\.[^.]+$/, '').slice(0, 18) || 'Bild',
+      x: (PRINT_W - img.width * sc) / 2,
+      y: canvasH > 40 ? canvasH + 8 : 20,
+      scale: sc,
+      rotation: 0,
+      opacity: 1,
+      flipH: false,
+      flipV: false
+    };
+    layers.push(layer);
+    selectedId = layer.id;
+    // Grow canvas if needed
+    const bottom = layer.y + img.height * sc + 20;
+    if (bottom > canvasH) canvasH = Math.ceil(bottom);
+    render();
+    renderLayerList();
+    emptyHint.style.display = 'none';
+    document.getElementById('printBtn').disabled = !btDevice;
+    toast('Bild hinzugefügt');
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+document.getElementById('addImageBtn').onclick = () => document.getElementById('fileInput').click();
+document.getElementById('fileInput').onchange = e => {
+  [...e.target.files].forEach(addImage);
+  e.target.value = '';
+};
+
+document.getElementById('deleteLayerBtn').onclick = () => {
+  if (!selectedId) return;
+  layers = layers.filter(l => l.id !== selectedId);
+  selectedId = layers.length ? layers[layers.length - 1].id : null;
+  if (!layers.length) {
+    canvasH = 200;
+    emptyHint.style.display = 'flex';
+  }
+  render();
+  renderLayerList();
+  toast('Layer gelöscht');
+};
+
+function renderLayerList() {
+  layerList.innerHTML = '';
+  // reverse so top layer is first in list
+  [...layers].reverse().forEach(l => {
+    const el = document.createElement('div');
+    el.className = 'layer-item' + (l.id === selectedId ? ' active' : '');
+    el.innerHTML = `
+      <canvas class="layer-thumb" width="36" height="36"></canvas>
+      <div class="layer-info">
+        <div class="layer-name">${l.name}</div>
+        <div class="layer-meta">${Math.round(l.scale*100)}% · ${Math.round(l.rotation)}°</div>
+      </div>
+      <div class="layer-actions">
+        <button data-act="up">⬆</button>
+        <button data-act="down">⬇</button>
+      </div>`;
+    // thumb
+    const tc = el.querySelector('canvas');
+    const tctx = tc.getContext('2d');
+    tctx.fillStyle = '#fff';
+    tctx.fillRect(0,0,36,36);
+    const r = Math.min(36 / l.img.width, 36 / l.img.height);
+    tctx.drawImage(l.img, (36 - l.img.width*r)/2, (36 - l.img.height*r)/2, l.img.width*r, l.img.height*r);
+
+    el.onclick = (e) => {
+      if (e.target.dataset.act === 'up') {
+        const i = layers.indexOf(l);
+        if (i < layers.length - 1) { [layers[i], layers[i+1]] = [layers[i+1], layers[i]]; }
+      } else if (e.target.dataset.act === 'down') {
+        const i = layers.indexOf(l);
+        if (i > 0) { [layers[i], layers[i-1]] = [layers[i-1], layers[i]]; }
+      } else {
+        selectedId = l.id;
+        syncSliders();
+      }
+      render();
+      renderLayerList();
+    };
+    layerList.appendChild(el);
+  });
+}
+
+// ---------- Edit controls ----------
+function syncSliders() {
+  const l = getSelected();
+  if (!l) return;
+  document.getElementById('scaleSlider').value = Math.round(l.scale * 100);
+  document.getElementById('scaleVal').textContent = Math.round(l.scale * 100) + '%';
+  document.getElementById('rotSlider').value = Math.round(l.rotation);
+  document.getElementById('rotVal').textContent = Math.round(l.rotation) + '°';
+  document.getElementById('opacitySlider').value = Math.round(l.opacity * 100);
+  document.getElementById('opacityVal').textContent = Math.round(l.opacity * 100) + '%';
+}
+
+document.getElementById('scaleSlider').oninput = e => {
+  const l = getSelected(); if (!l) return;
+  l.scale = e.target.value / 100;
+  document.getElementById('scaleVal').textContent = e.target.value + '%';
+  render();
+};
+document.getElementById('rotSlider').oninput = e => {
+  const l = getSelected(); if (!l) return;
+  l.rotation = +e.target.value;
+  document.getElementById('rotVal').textContent = e.target.value + '°';
+  render();
+};
+document.getElementById('opacitySlider').oninput = e => {
+  const l = getSelected(); if (!l) return;
+  l.opacity = e.target.value / 100;
+  document.getElementById('opacityVal').textContent = e.target.value + '%';
+  render();
+};
+
+document.getElementById('rotLeft').onclick = () => {
+  const l = getSelected(); if (!l) return;
+  l.rotation = (l.rotation - 90 + 360) % 360 - 180;
+  if (l.rotation > 180) l.rotation -= 360;
+  syncSliders(); render();
+};
+document.getElementById('rotRight').onclick = () => {
+  const l = getSelected(); if (!l) return;
+  l.rotation = (l.rotation + 90) % 360;
+  if (l.rotation > 180) l.rotation -= 360;
+  syncSliders(); render();
+};
+document.getElementById('flipH').onclick = () => {
+  const l = getSelected(); if (!l) return;
+  l.flipH = !l.flipH; render();
+};
+document.getElementById('flipV').onclick = () => {
+  const l = getSelected(); if (!l) return;
+  l.flipV = !l.flipV; render();
+};
+document.getElementById('bringFront').onclick = () => {
+  const l = getSelected(); if (!l) return;
+  const i = layers.indexOf(l);
+  if (i < layers.length - 1) {
+    layers.splice(i, 1);
+    layers.push(l);
+    render(); renderLayerList();
+  }
+};
+document.getElementById('sendBack').onclick = () => {
+  const l = getSelected(); if (!l) return;
+  const i = layers.indexOf(l);
+  if (i > 0) {
+    layers.splice(i, 1);
+    layers.unshift(l);
+    render(); renderLayerList();
+  }
+};
+
+// ---------- Filter controls ----------
+document.getElementById('ditherSelect').onchange = e => {
+  filterMode = e.target.value;
+  render();
+};
+document.getElementById('filterStrength').oninput = e => {
+  filterStrength = +e.target.value;
+  document.getElementById('filterStrVal').textContent = e.target.value;
+  render();
+};
+document.getElementById('pixelSize').oninput = e => {
+  pixelSize = +e.target.value;
+  document.getElementById('pixelVal').textContent = e.target.value;
+  if (filterMode === 'pixelate') render();
+};
+document.getElementById('invertBtn').onclick = () => {
+  invertGlobal = !invertGlobal;
+  render();
+};
+document.getElementById('resetFilterBtn').onclick = () => {
+  invertGlobal = false;
+  filterMode = 'floyd';
+  filterStrength = 50;
+  pixelSize = 4;
+  document.getElementById('ditherSelect').value = 'floyd';
+  document.getElementById('filterStrength').value = 50;
+  document.getElementById('filterStrVal').textContent = '50';
+  document.getElementById('pixelSize').value = 4;
+  document.getElementById('pixelVal').textContent = '4';
+  render();
+  toast('Filter zurückgesetzt');
+};
+
+document.getElementById('intensity').oninput = e => {
+  document.getElementById('intensityVal').textContent = e.target.value;
+};
+
+// ---------- Drag on stage (move selected layer) ----------
+let dragging = false, dragOffX = 0, dragOffY = 0;
+
+function getCanvasScale() {
+  // how many CSS pixels = 1 canvas pixel
+  return preview.getBoundingClientRect().width / PRINT_W;
+}
+
+function clientToCanvas(clientX, clientY) {
+  const r = preview.getBoundingClientRect();
+  const s = getCanvasScale();
+  return {
+    x: (clientX - r.left) / s,
+    y: (clientY - r.top) / s
+  };
+}
+
+function hitTest(cx, cy) {
+  // top-most first
+  for (let i = layers.length - 1; i >= 0; i--) {
+    const l = layers[i];
+    const w = l.img.width * l.scale;
+    const h = l.img.height * l.scale;
+    // simple AABB ignoring rotation for hit (good enough)
+    if (cx >= l.x && cx <= l.x + w && cy >= l.y && cy <= l.y + h) return l;
+  }
+  return null;
+}
+
+function onPointerDown(e) {
+  if (layers.length === 0) return;
+  e.preventDefault();
+  const pt = clientToCanvas(e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY);
+  const hit = hitTest(pt.x, pt.y);
+  if (hit) {
+    selectedId = hit.id;
+    dragging = true;
+    dragOffX = pt.x - hit.x;
+    dragOffY = pt.y - hit.y;
+    syncSliders();
+    renderLayerList();
+    render();
+  }
+}
+function onPointerMove(e) {
+  if (!dragging) return;
+  e.preventDefault();
+  const pt = clientToCanvas(e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY);
+  const l = getSelected();
+  if (!l) return;
+  l.x = pt.x - dragOffX;
+  l.y = pt.y - dragOffY;
+  // grow canvas
+  const bottom = l.y + l.img.height * l.scale + 30;
+  if (bottom > canvasH) canvasH = Math.ceil(bottom);
+  render();
+}
+function onPointerUp() { dragging = false; }
+
+stage.addEventListener('mousedown', onPointerDown);
+stage.addEventListener('mousemove', onPointerMove);
+stage.addEventListener('mouseup', onPointerUp);
+stage.addEventListener('mouseleave', onPointerUp);
+stage.addEventListener('touchstart', onPointerDown, { passive: false });
+stage.addEventListener('touchmove', onPointerMove, { passive: false });
+stage.addEventListener('touchend', onPointerUp);
+
+// ---------- Render pipeline ----------
+function render() {
+  // resize canvas
+  const h = Math.max(120, Math.ceil(canvasH));
+  if (preview.height !== h) {
+    preview.height = h;
+    // keep paper aspect
+    const cssW = paper.clientWidth || 360;
+    paper.style.height = (cssW * h / PRINT_W) + 'px';
+  }
+  preview.width = PRINT_W;
+
+  pctx.fillStyle = '#ffffff';
+  pctx.fillRect(0, 0, PRINT_W, preview.height);
+
+  // draw layers bottom → top
+  layers.forEach(l => {
+    pctx.save();
+    pctx.globalAlpha = l.opacity;
+    const cx = l.x + (l.img.width * l.scale) / 2;
+    const cy = l.y + (l.img.height * l.scale) / 2;
+    pctx.translate(cx, cy);
+    pctx.rotate(l.rotation * Math.PI / 180);
+    pctx.scale(l.flipH ? -l.scale : l.scale, l.flipV ? -l.scale : l.scale);
+    pctx.drawImage(l.img, -l.img.width / 2, -l.img.height / 2);
+    pctx.restore();
+  });
+
+  // selection outline
+  const sel = getSelected();
+  if (sel) {
+    pctx.save();
+    const w = sel.img.width * sel.scale;
+    const h = sel.img.height * sel.scale;
+    const cx = sel.x + w / 2;
+    const cy = sel.y + h / 2;
+    pctx.translate(cx, cy);
+    pctx.rotate(sel.rotation * Math.PI / 180);
+    pctx.strokeStyle = '#f59e0b';
+    pctx.lineWidth = 2;
+    pctx.setLineDash([6, 4]);
+    pctx.strokeRect(-w / 2 - 2, -h / 2 - 2, w + 4, h + 4);
+    pctx.restore();
+  }
+
+  // Apply filter preview (on a temp copy so we can still edit)
+  applyFilterPreview();
+}
+
+function applyFilterPreview() {
+  // We already drew the composite. Now read it and dither for visual feedback.
+  // To keep it responsive we dither at lower quality for preview if needed,
+  // but for 384px it's fine.
+  const imgData = pctx.getImageData(0, 0, PRINT_W, preview.height);
+  const mono = ditherImageData(imgData, filterMode, filterStrength, pixelSize, invertGlobal);
+
+  // paint back as pure B/W
+  const out = pctx.createImageData(PRINT_W, preview.height);
+  for (let i = 0; i < mono.length; i++) {
+    const v = mono[i] ? 0 : 255; // 1 = black
+    out.data[i*4] = v;
+    out.data[i*4+1] = v;
+    out.data[i*4+2] = v;
+    out.data[i*4+3] = 255;
+  }
+  pctx.putImageData(out, 0, 0);
+}
+
+// ---------- Dither algorithms ----------
+function luminance(r, g, b) {
+  return 0.299 * r + 0.587 * g + 0.114 * b;
+}
+
+function ditherImageData(imgData, mode, strength, pxSize, invert) {
+  const w = imgData.width, h = imgData.height;
+  const data = imgData.data;
+  const lum = new Float32Array(w * h);
+
+  for (let i = 0; i < w * h; i++) {
+    let v = luminance(data[i*4], data[i*4+1], data[i*4+2]);
+    if (invert) v = 255 - v;
+    // strength: blend toward mid-gray or contrast
+    const mid = 128;
+    v = mid + (v - mid) * (0.4 + strength / 100 * 0.6);
+    lum[i] = Math.max(0, Math.min(255, v));
+  }
+
+  const out = new Uint8Array(w * h); // 1 = black
+
+  if (mode === 'pixelate') {
+    const s = Math.max(2, pxSize);
+    for (let y = 0; y < h; y += s) {
+      for (let x = 0; x < w; x += s) {
+        let sum = 0, cnt = 0;
+        for (let dy = 0; dy < s && y+dy < h; dy++)
+          for (let dx = 0; dx < s && x+dx < w; dx++) {
+            sum += lum[(y+dy)*w + (x+dx)];
+            cnt++;
+          }
+        const avg = sum / cnt;
+        const black = avg < 128 ? 1 : 0;
+        for (let dy = 0; dy < s && y+dy < h; dy++)
+          for (let dx = 0; dx < s && x+dx < w; dx++)
+            out[(y+dy)*w + (x+dx)] = black;
+      }
+    }
+    return out;
+  }
+
+  if (mode === 'threshold') {
+    const t = 80 + (100 - strength) * 1.2; // strength high → more black
+    for (let i = 0; i < lum.length; i++) out[i] = lum[i] < t ? 1 : 0;
+    return out;
+  }
+
+  // Bayer matrices
+  const bayer4 = [
+    [ 0, 8, 2,10],
+    [12, 4,14, 6],
+    [ 3,11, 1, 9],
+    [15, 7,13, 5]
+  ];
+  const bayer8 = [
+    [ 0,32, 8,40, 2,34,10,42],
+    [48,16,56,24,50,18,58,26],
+    [12,44, 4,36,14,46, 6,38],
+    [60,28,52,20,62,30,54,22],
+    [ 3,35,11,43, 1,33, 9,41],
+    [51,19,59,27,49,17,57,25],
+    [15,47, 7,39,13,45, 5,37],
+    [63,31,55,23,61,29,53,21]
+  ];
+
+  if (mode === 'bayer4' || mode === 'bayer8') {
+    const m = mode === 'bayer4' ? bayer4 : bayer8;
+    const n = m.length;
+    const scale = 256 / (n * n);
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const t = (m[y % n][x % n] + 0.5) * scale;
+        // strength modulates threshold offset
+        const adj = t + (50 - strength) * 1.5;
+        out[y * w + x] = lum[y * w + x] < adj ? 1 : 0;
+      }
+    }
+    return out;
+  }
+
+  // Error diffusion: Floyd-Steinberg or Atkinson
+  const err = new Float32Array(lum);
+  const isAtk = mode === 'atkinson';
+
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      const old = err[i];
+      const neu = old < 128 ? 0 : 255;
+      out[i] = neu < 128 ? 1 : 0;
+      const e = old - neu;
+
+      if (isAtk) {
+        // Atkinson: distribute 1/8 to 6 neighbors
+        const d = e / 8;
+        if (x + 1 < w) err[i + 1] += d;
+        if (x + 2 < w) err[i + 2] += d;
+        if (y + 1 < h) {
+          if (x > 0) err[i + w - 1] += d;
+          err[i + w] += d;
+          if (x + 1 < w) err[i + w + 1] += d;
+        }
+        if (y + 2 < h) err[i + 2 * w] += d;
+      } else {
+        // Floyd-Steinberg
+        if (x + 1 < w) err[i + 1] += e * 7 / 16;
+        if (y + 1 < h) {
+          if (x > 0) err[i + w - 1] += e * 3 / 16;
+          err[i + w] += e * 5 / 16;
+          if (x + 1 < w) err[i + w + 1] += e * 1 / 16;
+        }
+      }
+    }
+  }
+  return out;
+}
+
+// ---------- Pack 1bpp for printer ----------
+function pack1bpp(mono, w, h) {
+  const bytesPerRow = w / 8;
+  const out = new Uint8Array(bytesPerRow * h);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x += 8) {
+      let byte = 0;
+      for (let b = 0; b < 8; b++) {
+        if (mono[y * w + x + b]) byte |= (1 << b); // LSB left
+      }
+      out[y * bytesPerRow + (x >> 3)] = byte;
+    }
+  }
+  return out;
+}
+
+function getPrintBuffer() {
+  // final composite without selection outline
+  const h = preview.height;
+  const off = document.createElement('canvas');
+  off.width = PRINT_W;
+  off.height = h;
+  const octx = off.getContext('2d');
+  octx.fillStyle = '#fff';
+  octx.fillRect(0, 0, PRINT_W, h);
+
+  layers.forEach(l => {
+    octx.save();
+    octx.globalAlpha = l.opacity;
+    const cx = l.x + (l.img.width * l.scale) / 2;
+    const cy = l.y + (l.img.height * l.scale) / 2;
+    octx.translate(cx, cy);
+    octx.rotate(l.rotation * Math.PI / 180);
+    octx.scale(l.flipH ? -l.scale : l.scale, l.flipV ? -l.scale : l.scale);
+    octx.drawImage(l.img, -l.img.width / 2, -l.img.height / 2);
+    octx.restore();
+  });
+
+  const imgData = octx.getImageData(0, 0, PRINT_W, h);
+  const mono = ditherImageData(imgData, filterMode, filterStrength, pixelSize, invertGlobal);
+  return pack1bpp(mono, PRINT_W, h);
+}
+
+// ---------- BLE Protocol ----------
+function crc8(data) {
+  let c = 0;
+  for (const b of data) {
+    c ^= b;
+    for (let i = 0; i < 8; i++) c = (c & 0x80) ? ((c << 1) ^ 0x07) & 0xFF : (c << 1) & 0xFF;
+  }
+  return c;
+}
+
+function packet(cmd, payload = [0x00]) {
+  const len = payload.length;
+  const buf = new Uint8Array(7 + len);
+  buf[0] = 0x22; buf[1] = 0x21;
+  buf[2] = cmd; buf[3] = 0x00;
+  buf[4] = len & 0xFF; buf[5] = (len >> 8) & 0xFF;
+  buf.set(payload, 6);
+  buf[6 + len] = crc8(payload);
+  buf[7 + len] = 0xFF;
+  return buf;
+}
+
+async function connectBT() {
+  if (btDevice && btDevice.gatt.connected) {
+    btDevice.gatt.disconnect();
+    setConnected(false);
+    toast('Getrennt');
+    return;
+  }
+  try {
+    toast('Drucker wählen…');
+    btDevice = await navigator.bluetooth.requestDevice({
+      filters: [
+        { namePrefix: 'MXW' },
+        { namePrefix: 'MXW01' },
+        { services: [SERVICE] },
+        { services: [SERVICE_ALT] }
+      ],
+      optionalServices: [SERVICE, SERVICE_ALT]
+    });
+    btDevice.addEventListener('gattserverdisconnected', () => {
+      setConnected(false);
+      toast('Verbindung verloren');
+    });
+    const server = await btDevice.gatt.connect();
+    let svc;
+    try { svc = await server.getPrimaryService(SERVICE); }
+    catch { svc = await server.getPrimaryService(SERVICE_ALT); }
+    btCtrl = await svc.getCharacteristic(CHAR_CTRL);
+    btNotify = await svc.getCharacteristic(CHAR_NOTIFY);
+    btData = await svc.getCharacteristic(CHAR_DATA);
+    await btNotify.startNotifications();
+    setConnected(true);
+    toast('Verbunden mit ' + (btDevice.name || 'MXW01'));
+  } catch (err) {
+    console.error(err);
+    toast('Fehler: ' + (err.message || 'Verbindung abgebrochen'));
+    setConnected(false);
+  }
+}
+
+async function printJob() {
+  if (!btCtrl || !btData || layers.length === 0) return;
+  const intensity = +document.getElementById('intensity').value;
+  const data = getPrintBuffer();
+  const lines = data.length / 48;
+
+  const bar = document.getElementById('progressBar');
+  const fill = document.getElementById('progressFill');
+  bar.classList.add('show');
+  fill.style.width = '5%';
+  document.getElementById('printBtn').disabled = true;
+
+  try {
+    await btCtrl.writeValueWithoutResponse(packet(0xA2, [intensity]));
+    await sleep(40);
+    fill.style.width = '12%';
+
+    // Print request: line_count LE, 0x30, mode 0x00
+    const req = [lines & 0xFF, (lines >> 8) & 0xFF, 0x30, 0x00];
+    await btCtrl.writeValueWithoutResponse(packet(0xA9, req));
+    await sleep(80);
+    fill.style.width = '20%';
+
+    const CHUNK = 160;
+    for (let i = 0; i < data.length; i += CHUNK) {
+      const chunk = data.slice(i, i + CHUNK);
+      await btData.writeValueWithoutResponse(chunk);
+      await sleep(12);
+      fill.style.width = (20 + (i / data.length) * 70) + '%';
+    }
+
+    await btCtrl.writeValueWithoutResponse(packet(0xAD, [0x00]));
+    fill.style.width = '100%';
+    toast('Druck gestartet ✨');
+  } catch (err) {
+    toast('Druckfehler: ' + err.message);
+  } finally {
+    setTimeout(() => {
+      bar.classList.remove('show');
+      fill.style.width = '0%';
+      document.getElementById('printBtn').disabled = false;
+    }, 800);
+  }
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+document.getElementById('connectBtn').onclick = connectBT;
+document.getElementById('printBtn').onclick = printJob;
+
+// ---------- Init ----------
+if (!navigator.bluetooth) {
+  toast('Web Bluetooth nicht verfügbar – Chrome/Edge nutzen', 4000);
+  document.getElementById('connectBtn').disabled = true;
+}
+
+// Initial empty canvas
+render();
+</script>
+</body>
+</html>
