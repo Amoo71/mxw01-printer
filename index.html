@@ -1,1 +1,176 @@
-placeholder
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<meta name="theme-color" content="#07090e"/>
+<title>MXW01 Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#07090e;--bg2:#0d1017;--surface:rgba(255,255,255,.03);--border:rgba(255,255,255,.07);--border-strong:rgba(255,255,255,.12);--accent:#f59e0b;--accent-dim:rgba(245,158,11,.15);--accent-glow:rgba(245,158,11,.35);--text:#f1f5f9;--muted:#8b95a8;--success:#34d399;--danger:#f87171;--glass:rgba(12,15,22,.82);--shadow-lg:0 25px 50px -12px rgba(0,0,0,.55);--radius:18px;--safe-b:env(safe-area-inset-bottom,0px);--ease:cubic-bezier(.22,1,.36,1)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;overscroll-behavior:none}
+body{background:radial-gradient(ellipse 90% 55% at 50% -25%,rgba(245,158,11,.09),transparent 55%),radial-gradient(ellipse 50% 40% at 100% 100%,rgba(59,130,246,.06),transparent 50%),var(--bg)}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;opacity:.4;animation:floatOrb 18s ease-in-out infinite}
+.orb-1{width:280px;height:280px;background:rgba(245,158,11,.18);top:-80px;left:20%}
+.orb-2{width:200px;height:200px;background:rgba(59,130,246,.12);bottom:10%;right:-40px;animation-delay:-6s;animation-duration:22s}
+.orb-3{width:160px;height:160px;background:rgba(168,85,247,.1);top:40%;left:-50px;animation-delay:-12s;animation-duration:26s}
+@keyframes floatOrb{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.08)}66%{transform:translate(-20px,15px) scale(.95)}}
+.app{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{width:36px;height:36px;background:linear-gradient(145deg,#fbbf24,#ea580c);border-radius:11px;display:grid;place-items:center;box-shadow:0 4px 16px var(--accent-glow)}
+.logo-mark svg{width:18px;height:18px;fill:#111}
+.logo-text{font-weight:700;font-size:1.12rem}
+.logo-sub{font-size:.68rem;color:var(--muted)}
+.status-pill{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);padding:7px 14px;border-radius:999px;font-size:.75rem;color:var(--muted)}
+.status-pill.connected{border-color:rgba(52,211,153,.3);color:var(--success)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--danger)}
+.dot.on{background:var(--success);box-shadow:0 0 10px var(--success)}
+.stage-wrap{flex:1;display:flex;flex-direction:column;min-height:0;padding:0 14px}
+.stage{flex:1;background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border);position:relative;overflow:hidden;box-shadow:var(--shadow-lg);display:flex;align-items:center;justify-content:center;touch-action:none}
+.paper{background:#fff;border-radius:3px;box-shadow:0 12px 28px rgba(0,0,0,.28),0 0 60px rgba(245,158,11,.06)}
+#preview{display:block;width:100%;height:auto;image-rendering:pixelated}
+.empty-hint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);font-size:.88rem;gap:12px;pointer-events:none;text-align:center;z-index:3}
+.panel{flex-shrink:0;background:var(--glass);backdrop-filter:blur(24px);border-top:1px solid var(--border);border-radius:22px 22px 0 0;padding:14px 16px calc(16px + var(--safe-b))}
+.tabs{display:flex;gap:3px;background:rgba(0,0,0,.35);padding:4px;border-radius:14px;margin-bottom:14px}
+.tab{flex:1;text-align:center;padding:9px 4px;border-radius:11px;font-size:.72rem;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:transparent}
+.tab.active{background:rgba(255,255,255,.08);color:var(--text)}
+.row{display:flex;gap:8px;margin-bottom:11px;align-items:center}
+button.btn{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:11px;font-size:.8rem;font-weight:600;cursor:pointer;min-height:44px}
+button.btn.primary{background:linear-gradient(145deg,#fbbf24,#ea580c);border:none;color:#111;font-weight:700}
+button.btn.danger{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.22);color:var(--danger)}
+button.btn.icon{flex:0 0 44px;padding:0}
+.slider-group{flex:1;display:flex;flex-direction:column;gap:6px}
+.slider-label{display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);text-transform:uppercase}
+.slider-label span:last-child{color:var(--text)}
+input[type=range]{-webkit-appearance:none;width:100%;height:5px;background:rgba(255,255,255,.08);border-radius:3px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:linear-gradient(145deg,#fbbf24,#ea580c);cursor:pointer;border:none}
+select{flex:1;background:rgba(0,0,0,.35);border:1px solid var(--border);color:var(--text);border-radius:11px;padding:11px;font-size:.8rem}
+.layers{max-height:100px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.layer-item{display:flex;align-items:center;gap:11px;background:rgba(0,0,0,.28);border:1px solid transparent;border-radius:12px;padding:8px 10px;cursor:pointer}
+.layer-item.active{border-color:rgba(245,158,11,.45);background:var(--accent-dim)}
+.layer-thumb{width:36px;height:36px;background:#fff;border-radius:7px}
+.layer-info{flex:1;min-width:0}
+.layer-name{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.layer-meta{font-size:.66rem;color:var(--muted)}
+.layer-actions button{width:28px;height:28px;border:none;background:rgba(255,255,255,.05);color:var(--muted);border-radius:8px;cursor:pointer}
+.text-area{width:100%;min-height:100px;max-height:150px;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem;line-height:1.45;padding:12px;resize:vertical;outline:none}
+.text-area:focus{border-color:rgba(245,158,11,.45)}
+#fileInput{display:none}
+.toast{position:fixed;bottom:calc(190px + var(--safe-b));left:50%;transform:translateX(-50%) translateY(16px);background:var(--bg2);border:1px solid var(--border-strong);padding:11px 20px;border-radius:14px;font-size:.84rem;opacity:0;pointer-events:none;transition:all .35s;z-index:100;max-width:88%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.progress-bar{height:3px;background:rgba(255,255,255,.06);margin-top:10px;display:none}
+.progress-bar.show{display:block}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#fbbf24);transition:width .25s}
+</style>
+</head>
+<body>
+<div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+<div class="app">
+<header>
+<div class="logo"><div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></div>
+<div><div class="logo-text">MXW01 Studio</div><div class="logo-sub">Thermal Print Editor</div></div></div>
+<div class="status-pill" id="statusPill"><div class="dot" id="statusDot"></div><span id="statusText">Offline</span></div>
+</header>
+<div class="stage-wrap"><div class="stage" id="stage">
+<div class="paper" id="paper" style="width:min(90vw,340px)"><canvas id="preview" width="384" height="200"></canvas></div>
+<div class="empty-hint" id="emptyHint"><div>Add images or text to begin<br><small>Use Layers or Text tab</small></div></div>
+</div></div>
+<div class="panel">
+<div class="tabs">
+<button class="tab active" data-tab="layers">Layers</button>
+<button class="tab" data-tab="text">Text</button>
+<button class="tab" data-tab="edit">Edit</button>
+<button class="tab" data-tab="filter">Filter</button>
+<button class="tab" data-tab="print">Print</button>
+</div>
+<div id="tab-layers"><div class="layers" id="layerList"></div>
+<div class="row"><button class="btn" id="addImageBtn">Add Image</button><button class="btn danger icon" id="deleteLayerBtn">&#10005;</button></div></div>
+<div id="tab-text" style="display:none">
+<div class="row" style="margin-bottom:10px"><textarea class="text-area" id="textInput" placeholder="Type or paste any text here... Supports all characters, symbols, multiline."></textarea></div>
+<div class="row"><div class="slider-group"><div class="slider-label"><span>Font Size</span><span id="fontSizeVal">22</span></div><input type="range" id="fontSize" min="12" max="48" value="22"/></div></div>
+<div class="row"><button class="btn" id="addTextBtn">Add Text to Canvas</button><button class="btn danger icon" id="clearTextBtn">&#10005;</button></div>
+</div>
+<div id="tab-edit" style="display:none">
+<div class="row"><button class="btn icon" id="rotLeft">&#8634;</button><button class="btn icon" id="rotRight">&#8635;</button><button class="btn icon" id="flipH">&#8644;</button><button class="btn icon" id="flipV">&#8645;</button><button class="btn icon" id="bringFront">&#9650;</button><button class="btn icon" id="sendBack">&#9660;</button></div>
+<div class="row"><div class="slider-group"><div class="slider-label"><span>Scale</span><span id="scaleVal">100%</span></div><input type="range" id="scaleSlider" min="10" max="300" value="100"/></div></div>
+<div class="row"><div class="slider-group"><div class="slider-label"><span>Rotation</span><span id="rotVal">0 deg</span></div><input type="range" id="rotSlider" min="-180" max="180" value="0"/></div></div>
+<div class="row"><div class="slider-group"><div class="slider-label"><span>Opacity</span><span id="opacityVal">100%</span></div><input type="range" id="opacitySlider" min="10" max="100" value="100"/></div></div>
+</div>
+<div id="tab-filter" style="display:none">
+<div class="row"><select id="ditherSelect"><option value="floyd">Floyd-Steinberg</option><option value="atkinson">Atkinson</option><option value="bayer4">Bayer 4x4</option><option value="bayer8">Bayer 8x8</option><option value="threshold">Threshold</option><option value="pixelate">Pixelate</option></select></div>
+<div class="row"><div class="slider-group"><div class="slider-label"><span>Filter Strength</span><span id="filterStrVal">50</span></div><input type="range" id="filterStrength" min="0" max="100" value="50"/></div></div>
+<div class="row"><div class="slider-group"><div class="slider-label"><span>Pixel Size</span><span id="pixelVal">4</span></div><input type="range" id="pixelSize" min="2" max="24" value="4"/></div></div>
+<div class="row"><button class="btn" id="invertBtn">Invert</button><button class="btn" id="resetFilterBtn">Reset</button></div>
+</div>
+<div id="tab-print" style="display:none">
+<div class="row"><div class="slider-group"><div class="slider-label"><span>Print Darkness</span><span id="intensityVal">90</span></div><input type="range" id="intensity" min="20" max="100" value="90"/></div></div>
+<div class="row"><button class="btn" id="connectBtn">Connect</button><button class="btn primary" id="printBtn" disabled>Print</button></div>
+<div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+</div></div>
+<input type="file" id="fileInput" accept="image/*" multiple/>
+<div class="toast" id="toast"></div>
+<script>
+const PRINT_W=384,SERVICE='0000ae30-0000-1000-8000-00805f9b34fb',SERVICE_ALT='0000af30-0000-1000-8000-00805f9b34fb',CHAR_CTRL='0000ae01-0000-1000-8000-00805f9b34fb',CHAR_NOTIFY='0000ae02-0000-1000-8000-00805f9b34fb',CHAR_DATA='0000ae03-0000-1000-8000-00805f9b34fb';
+let layers=[],selectedId=null,nextId=1,invertGlobal=false,filterMode='floyd',filterStrength=50,pixelSize=4,canvasH=200;
+let btDevice=null,btCtrl=null,btData=null;
+const preview=document.getElementById('preview'),pctx=preview.getContext('2d',{willReadFrequently:true}),paper=document.getElementById('paper'),stage=document.getElementById('stage'),emptyHint=document.getElementById('emptyHint'),layerList=document.getElementById('layerList'),toastEl=document.getElementById('toast'),statusPill=document.getElementById('statusPill');
+function toast(msg,ms=2200){toastEl.textContent=msg;toastEl.classList.add('show');clearTimeout(toastEl._t);toastEl._t=setTimeout(()=>toastEl.classList.remove('show'),ms)}
+function uid(){return nextId++}
+function getSelected(){return layers.find(l=>l.id===selectedId)||null}
+function setConnected(ok){document.getElementById('statusDot').classList.toggle('on',ok);document.getElementById('statusText').textContent=ok?'Connected':'Offline';statusPill.classList.toggle('connected',ok);document.getElementById('printBtn').disabled=!ok||layers.length===0;document.getElementById('connectBtn').textContent=ok?'Disconnect':'Connect'}
+document.querySelectorAll('.tab').forEach(t=>{t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');['layers','text','edit','filter','print'].forEach(n=>{document.getElementById('tab-'+n).style.display=t.dataset.tab===n?'block':'none'})})});
+function addImage(file){const img=new Image();img.onload=()=>{const maxW=PRINT_W*.92,sc=Math.min(1,maxW/img.width),layer={id:uid(),img,name:(file.name||'Image').replace(/\.[^.]+$/,'').slice(0,20),x:(PRINT_W-img.width*sc)/2,y:canvasH>40?canvasH+8:20,scale:sc,rotation:0,opacity:1,flipH:false,flipV:false};layers.push(layer);selectedId=layer.id;const bottom=layer.y+img.height*sc+20;if(bottom>canvasH)canvasH=Math.ceil(bottom);render();renderLayerList();emptyHint.style.display='none';document.getElementById('printBtn').disabled=!btDevice;toast('Image added')};img.src=URL.createObjectURL(file)}
+document.getElementById('addImageBtn').onclick=()=>document.getElementById('fileInput').click();
+document.getElementById('fileInput').onchange=e=>{[...e.target.files].forEach(addImage);e.target.value=''};
+document.getElementById('deleteLayerBtn').onclick=()=>{if(!selectedId)return;layers=layers.filter(l=>l.id!==selectedId);selectedId=layers.length?layers[layers.length-1].id:null;if(!layers.length){canvasH=200;emptyHint.style.display='flex'}render();renderLayerList();toast('Layer removed')};
+function wrapText(ctx,text,maxWidth){const lines=[];for(const para of String(text).split('\n')){if(!para){lines.push('');continue}const words=para.split(/(\s+)/);let line='';for(const word of words){const test=line+word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word.trimStart()}else line=test}lines.push(line)}return lines}
+function addTextLayer(){const text=document.getElementById('textInput').value;if(!text||!text.trim()){toast('Enter some text first');return}const fontSize=+document.getElementById('fontSize').value,pad=12,maxW=PRINT_W-pad*2;const off=document.createElement('canvas');off.width=PRINT_W;const octx=off.getContext('2d');octx.font='600 '+fontSize+'px Inter,system-ui,sans-serif';octx.textBaseline='top';const lines=wrapText(octx,text,maxW),lineH=fontSize*1.35,h=Math.ceil(pad*2+lines.length*lineH);off.height=h;octx.fillStyle='#fff';octx.fillRect(0,0,PRINT_W,h);octx.fillStyle='#000';octx.font='600 '+fontSize+'px Inter,system-ui,sans-serif';octx.textBaseline='top';lines.forEach((ln,i)=>octx.fillText(ln,pad,pad+i*lineH));const img=new Image();img.onload=()=>{const layer={id:uid(),img,name:(text.trim().slice(0,18)||'Text').replace(/\n/g,' '),x:0,y:canvasH>40?canvasH+8:10,scale:1,rotation:0,opacity:1,flipH:false,flipV:false};layers.push(layer);selectedId=layer.id;const bottom=layer.y+h+20;if(bottom>canvasH)canvasH=Math.ceil(bottom);render();renderLayerList();emptyHint.style.display='none';document.getElementById('printBtn').disabled=!btDevice;toast('Text added')};img.src=off.toDataURL('image/png')}
+document.getElementById('fontSize').oninput=e=>{document.getElementById('fontSizeVal').textContent=e.target.value};
+document.getElementById('addTextBtn').onclick=addTextLayer;
+document.getElementById('clearTextBtn').onclick=()=>{document.getElementById('textInput').value='';toast('Text cleared')};
+function renderLayerList(){layerList.innerHTML='';[...layers].reverse().forEach(l=>{const el=document.createElement('div');el.className='layer-item'+(l.id===selectedId?' active':'');el.innerHTML=`<canvas class="layer-thumb" width="36" height="36"></canvas><div class="layer-info"><div class="layer-name">${l.name}</div><div class="layer-meta">${Math.round(l.scale*100)}% · ${Math.round(l.rotation)}°</div></div><div class="layer-actions"><button data-act="up">▲</button><button data-act="down">▼</button></div>`;const tc=el.querySelector('canvas'),tctx=tc.getContext('2d');tctx.fillStyle='#fff';tctx.fillRect(0,0,36,36);const r=Math.min(36/l.img.width,36/l.img.height);tctx.drawImage(l.img,(36-l.img.width*r)/2,(36-l.img.height*r)/2,l.img.width*r,l.img.height*r);el.onclick=e=>{if(e.target.dataset.act==='up'){const i=layers.indexOf(l);if(i<layers.length-1)[layers[i],layers[i+1]]=[layers[i+1],layers[i]]}else if(e.target.dataset.act==='down'){const i=layers.indexOf(l);if(i>0)[layers[i],layers[i-1]]=[layers[i-1],layers[i]]}else{selectedId=l.id;syncSliders()}render();renderLayerList()};layerList.appendChild(el)})}
+function syncSliders(){const l=getSelected();if(!l)return;document.getElementById('scaleSlider').value=Math.round(l.scale*100);document.getElementById('scaleVal').textContent=Math.round(l.scale*100)+'%';document.getElementById('rotSlider').value=Math.round(l.rotation);document.getElementById('rotVal').textContent=Math.round(l.rotation)+' deg';document.getElementById('opacitySlider').value=Math.round(l.opacity*100);document.getElementById('opacityVal').textContent=Math.round(l.opacity*100)+'%'}
+document.getElementById('scaleSlider').oninput=e=>{const l=getSelected();if(!l)return;l.scale=e.target.value/100;document.getElementById('scaleVal').textContent=e.target.value+'%';render()};
+document.getElementById('rotSlider').oninput=e=>{const l=getSelected();if(!l)return;l.rotation=+e.target.value;document.getElementById('rotVal').textContent=e.target.value+' deg';render()};
+document.getElementById('opacitySlider').oninput=e=>{const l=getSelected();if(!l)return;l.opacity=e.target.value/100;document.getElementById('opacityVal').textContent=e.target.value+'%';render()};
+document.getElementById('rotLeft').onclick=()=>{const l=getSelected();if(!l)return;l.rotation=((l.rotation-90)%360);if(l.rotation<-180)l.rotation+=360;if(l.rotation>180)l.rotation-=360;syncSliders();render()};
+document.getElementById('rotRight').onclick=()=>{const l=getSelected();if(!l)return;l.rotation=((l.rotation+90)%360);if(l.rotation>180)l.rotation-=360;syncSliders();render()};
+document.getElementById('flipH').onclick=()=>{const l=getSelected();if(!l)return;l.flipH=!l.flipH;render()};
+document.getElementById('flipV').onclick=()=>{const l=getSelected();if(!l)return;l.flipV=!l.flipV;render()};
+document.getElementById('bringFront').onclick=()=>{const l=getSelected();if(!l)return;const i=layers.indexOf(l);if(i<layers.length-1){layers.splice(i,1);layers.push(l);render();renderLayerList()}};
+document.getElementById('sendBack').onclick=()=>{const l=getSelected();if(!l)return;const i=layers.indexOf(l);if(i>0){layers.splice(i,1);layers.unshift(l);render();renderLayerList()}};
+document.getElementById('ditherSelect').onchange=e=>{filterMode=e.target.value;render()};
+document.getElementById('filterStrength').oninput=e=>{filterStrength=+e.target.value;document.getElementById('filterStrVal').textContent=e.target.value;render()};
+document.getElementById('pixelSize').oninput=e=>{pixelSize=+e.target.value;document.getElementById('pixelVal').textContent=e.target.value;if(filterMode==='pixelate')render()};
+document.getElementById('invertBtn').onclick=()=>{invertGlobal=!invertGlobal;render()};
+document.getElementById('resetFilterBtn').onclick=()=>{invertGlobal=false;filterMode='floyd';filterStrength=50;pixelSize=4;document.getElementById('ditherSelect').value='floyd';document.getElementById('filterStrength').value=50;document.getElementById('filterStrVal').textContent='50';document.getElementById('pixelSize').value=4;document.getElementById('pixelVal').textContent='4';render();toast('Filters reset')};
+document.getElementById('intensity').oninput=e=>{document.getElementById('intensityVal').textContent=e.target.value};
+let dragging=false,dragOffX=0,dragOffY=0;
+function getCanvasScale(){return preview.getBoundingClientRect().width/PRINT_W}
+function clientToCanvas(cx,cy){const r=preview.getBoundingClientRect(),s=getCanvasScale();return{x:(cx-r.left)/s,y:(cy-r.top)/s}}
+function hitTest(cx,cy){for(let i=layers.length-1;i>=0;i--){const l=layers[i],w=l.img.width*l.scale,h=l.img.height*l.scale;if(cx>=l.x&&cx<=l.x+w&&cy>=l.y&&cy<=l.y+h)return l}return null}
+function onPointerDown(e){if(!layers.length)return;e.preventDefault();const pt=clientToCanvas(e.clientX||e.touches[0].clientX,e.clientY||e.touches[0].clientY),hit=hitTest(pt.x,pt.y);if(hit){selectedId=hit.id;dragging=true;dragOffX=pt.x-hit.x;dragOffY=pt.y-hit.y;syncSliders();renderLayerList();render()}}
+function onPointerMove(e){if(!dragging)return;e.preventDefault();const pt=clientToCanvas(e.clientX||e.touches[0].clientX,e.clientY||e.touches[0].clientY),l=getSelected();if(!l)return;l.x=pt.x-dragOffX;l.y=pt.y-dragOffY;const bottom=l.y+l.img.height*l.scale+30;if(bottom>canvasH)canvasH=Math.ceil(bottom);render()}
+function onPointerUp(){dragging=false}
+stage.addEventListener('mousedown',onPointerDown);stage.addEventListener('mousemove',onPointerMove);stage.addEventListener('mouseup',onPointerUp);stage.addEventListener('mouseleave',onPointerUp);stage.addEventListener('touchstart',onPointerDown,{passive:false});stage.addEventListener('touchmove',onPointerMove,{passive:false});stage.addEventListener('touchend',onPointerUp);
+function render(){const h=Math.max(120,Math.ceil(canvasH));if(preview.height!==h){preview.height=h;const cssW=paper.clientWidth||340;paper.style.height=(cssW*h/PRINT_W)+'px'}preview.width=PRINT_W;pctx.fillStyle='#fff';pctx.fillRect(0,0,PRINT_W,preview.height);layers.forEach(l=>{pctx.save();pctx.globalAlpha=l.opacity;const cx=l.x+(l.img.width*l.scale)/2,cy=l.y+(l.img.height*l.scale)/2;pctx.translate(cx,cy);pctx.rotate(l.rotation*Math.PI/180);pctx.scale(l.flipH?-l.scale:l.scale,l.flipV?-l.scale:l.scale);pctx.drawImage(l.img,-l.img.width/2,-l.img.height/2);pctx.restore()});const sel=getSelected();if(sel){pctx.save();const w=sel.img.width*sel.scale,h=sel.img.height*sel.scale,cx=sel.x+w/2,cy=sel.y+h/2;pctx.translate(cx,cy);pctx.rotate(sel.rotation*Math.PI/180);pctx.strokeStyle='#f59e0b';pctx.lineWidth=2;pctx.setLineDash([5,4]);pctx.strokeRect(-w/2-2,-h/2-2,w+4,h+4);pctx.restore()}applyFilterPreview()}
+function applyFilterPreview(){const imgData=pctx.getImageData(0,0,PRINT_W,preview.height),mono=ditherImageData(imgData,filterMode,filterStrength,pixelSize,invertGlobal),out=pctx.createImageData(PRINT_W,preview.height);for(let i=0;i<mono.length;i++){const v=mono[i]?0:255;out.data[i*4]=v;out.data[i*4+1]=v;out.data[i*4+2]=v;out.data[i*4+3]=255}pctx.putImageData(out,0,0)}
+function luminance(r,g,b){return .299*r+.587*g+.114*b}
+function ditherImageData(imgData,mode,strength,pxSize,invert){const w=imgData.width,h=imgData.height,data=imgData.data,lum=new Float32Array(w*h);for(let i=0;i<w*h;i++){let v=luminance(data[i*4],data[i*4+1],data[i*4+2]);if(invert)v=255-v;const mid=128;v=mid+(v-mid)*(.4+strength/100*.6);lum[i]=Math.max(0,Math.min(255,v))}const out=new Uint8Array(w*h);if(mode==='pixelate'){const s=Math.max(2,pxSize);for(let y=0;y<h;y+=s)for(let x=0;x<w;x+=s){let sum=0,cnt=0;for(let dy=0;dy<s&&y+dy<h;dy++)for(let dx=0;dx<s&&x+dx<w;dx++){sum+=lum[(y+dy)*w+(x+dx)];cnt++}const black=sum/cnt<128?1:0;for(let dy=0;dy<s&&y+dy<h;dy++)for(let dx=0;dx<s&&x+dx<w;dx++)out[(y+dy)*w+(x+dx)]=black}return out}if(mode==='threshold'){const t=80+(100-strength)*1.2;for(let i=0;i<lum.length;i++)out[i]=lum[i]<t?1:0;return out}const bayer4=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]],bayer8=[[0,32,8,40,2,34,10,42],[48,16,56,24,50,18,58,26],[12,44,4,36,14,46,6,38],[60,28,52,20,62,30,54,22],[3,35,11,43,1,33,9,41],[51,19,59,27,49,17,57,25],[15,47,7,39,13,45,5,37],[63,31,55,23,61,29,53,21]];if(mode==='bayer4'||mode==='bayer8'){const m=mode==='bayer4'?bayer4:bayer8,n=m.length,scale=256/(n*n);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const t=(m[y%n][x%n]+.5)*scale,adj=t+(50-strength)*1.5;out[y*w+x]=lum[y*w+x]<adj?1:0}return out}const err=new Float32Array(lum),isAtk=mode==='atkinson';for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x,old=err[i],neu=old<128?0:255;out[i]=neu<128?1:0;const e=old-neu;if(isAtk){const d=e/8;if(x+1<w)err[i+1]+=d;if(x+2<w)err[i+2]+=d;if(y+1<h){if(x>0)err[i+w-1]+=d;err[i+w]+=d;if(x+1<w)err[i+w+1]+=d}if(y+2<h)err[i+2*w]+=d}else{if(x+1<w)err[i+1]+=e*7/16;if(y+1<h){if(x>0)err[i+w-1]+=e*3/16;err[i+w]+=e*5/16;if(x+1<w)err[i+w+1]+=e*1/16}}}return out}
+function pack1bpp(mono,w,h){const bytesPerRow=w/8,out=new Uint8Array(bytesPerRow*h);for(let y=0;y<h;y++)for(let x=0;x<w;x+=8){let byte=0;for(let b=0;b<8;b++)if(mono[y*w+x+b])byte|=1<<b;out[y*bytesPerRow+(x>>3)]=byte}return out}
+function getPrintBuffer(){const h=preview.height,off=document.createElement('canvas');off.width=PRINT_W;off.height=h;const octx=off.getContext('2d');octx.fillStyle='#fff';octx.fillRect(0,0,PRINT_W,h);layers.forEach(l=>{octx.save();octx.globalAlpha=l.opacity;const cx=l.x+(l.img.width*l.scale)/2,cy=l.y+(l.img.height*l.scale)/2;octx.translate(cx,cy);octx.rotate(l.rotation*Math.PI/180);octx.scale(l.flipH?-l.scale:l.scale,l.flipV?-l.scale:l.scale);octx.drawImage(l.img,-l.img.width/2,-l.img.height/2);octx.restore()});const imgData=octx.getImageData(0,0,PRINT_W,h),mono=ditherImageData(imgData,filterMode,filterStrength,pixelSize,invertGlobal);return pack1bpp(mono,PRINT_W,h)}
+function crc8(data){let c=0;for(const b of data){c^=b;for(let i=0;i<8;i++)c=(c&0x80)?((c<<1)^0x07)&0xFF:(c<<1)&0xFF}return c}
+function packet(cmd,payload=[0x00]){const len=payload.length,buf=new Uint8Array(7+len);buf[0]=0x22;buf[1]=0x21;buf[2]=cmd;buf[3]=0x00;buf[4]=len&0xFF;buf[5]=(len>>8)&0xFF;buf.set(payload,6);buf[6+len]=crc8(payload);buf[7+len]=0xFF;return buf}
+async function connectBT(){if(btDevice&&btDevice.gatt.connected){btDevice.gatt.disconnect();setConnected(false);toast('Disconnected');return}try{toast('Select printer…');btDevice=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'MXW'},{namePrefix:'MXW01'},{services:[SERVICE]},{services:[SERVICE_ALT]}],optionalServices:[SERVICE,SERVICE_ALT]});btDevice.addEventListener('gattserverdisconnected',()=>{setConnected(false);toast('Connection lost')});const server=await btDevice.gatt.connect();let svc;try{svc=await server.getPrimaryService(SERVICE)}catch{svc=await server.getPrimaryService(SERVICE_ALT)}btCtrl=await svc.getCharacteristic(CHAR_CTRL);await svc.getCharacteristic(CHAR_NOTIFY);btData=await svc.getCharacteristic(CHAR_DATA);setConnected(true);toast('Connected to '+(btDevice.name||'MXW01'))}catch(err){toast(err.message||'Connection cancelled');setConnected(false)}}
+async function printJob(){if(!btCtrl||!btData||!layers.length)return;const intensity=+document.getElementById('intensity').value,data=getPrintBuffer(),lines=data.length/48,bar=document.getElementById('progressBar'),fill=document.getElementById('progressFill');bar.classList.add('show');fill.style.width='5%';document.getElementById('printBtn').disabled=true;try{await btCtrl.writeValueWithoutResponse(packet(0xA2,[intensity]));await sleep(40);fill.style.width='12%';const req=[lines&0xFF,(lines>>8)&0xFF,0x30,0x00];await btCtrl.writeValueWithoutResponse(packet(0xA9,req));await sleep(80);fill.style.width='20%';const CHUNK=160;for(let i=0;i<data.length;i+=CHUNK){await btData.writeValueWithoutResponse(data.slice(i,i+CHUNK));await sleep(12);fill.style.width=(20+(i/data.length)*70)+'%'}await btCtrl.writeValueWithoutResponse(packet(0xAD,[0x00]));fill.style.width='100%';toast('Print started')}catch(err){toast('Print error: '+err.message)}finally{setTimeout(()=>{bar.classList.remove('show');fill.style.width='0%';document.getElementById('printBtn').disabled=false},800)}}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+document.getElementById('connectBtn').onclick=connectBT;
+document.getElementById('printBtn').onclick=printJob;
+if(!navigator.bluetooth){toast('Web Bluetooth not available. Use Chrome or Edge.',4000);document.getElementById('connectBtn').disabled=true}
+render();
+</script>
+</body>
+</html>
